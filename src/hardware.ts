@@ -9,6 +9,7 @@ import {
 import { system } from "systeminformation";
 import { read, removeFile } from "./file-persistence";
 import { logger } from "./logger";
+import { name, version } from "../package.json";
 
 const clientIdFile = "clientId.json";
 
@@ -105,7 +106,7 @@ export function addHardwareInfos(
 }
 
 function addFirmwareDetails(client: MqttClient): void {
-  client.publish("s/us", `115,typescript-agent,0.0.1`, {
+  client.publish("s/us", `115,${name},${version}`, {
     qos: 1,
   });
 }
@@ -120,7 +121,7 @@ async function addAgentDetails(
   });
   const agentDetailsToAdd = {
     id: `${details.data.managedObject.id}`,
-    c8y_Agent: { name: "typescript-agent", version: "0.0.1" },
+    c8y_Agent: { name, version },
   };
   await restClient.inventory.update(agentDetailsToAdd);
 }

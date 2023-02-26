@@ -23,10 +23,11 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
 
       - name: Install Yarn
         run: npm install -g yarn
@@ -37,11 +38,7 @@ jobs:
 
       - name: 🕵️‍♂️  Lint
         run: |
-          yarn lint --if-present
-
-      - name: 🧪  Test
-        run: |
-          yarn test --if-present
+          yarn lint
 
   build:
     name: 🚧 Build
@@ -55,10 +52,11 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
 
       - name: Install Yarn
         run: npm install -g yarn

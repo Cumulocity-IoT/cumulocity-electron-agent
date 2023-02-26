@@ -1,0 +1,14 @@
+[Unit]
+Description=Cumulocity electron agent.
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ubuntu
+ExecStart=/usr/bin/xvfb-run /usr/bin/cumulocity-electron-agent
+Restart=on-failure
+RestartPreventExitStatus=255
+User=ubuntu
+Group=ubuntu
+
+[Install]
+WantedBy=multi-user.target

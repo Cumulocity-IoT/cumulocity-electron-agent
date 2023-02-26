@@ -46,8 +46,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [macos-latest, windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.runner }}
+        runner: [macos, windows, ubuntu]
+    runs-on: ${{ matrix.runner }}-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
@@ -72,7 +72,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: build-${{ github.event.number }}-${{ github.run_id }}
+          name: build-${{ matrix.runner }}-${{ github.event.number }}-${{ github.run_id }}
           if-no-files-found: error
           retention-days: 5
           path: out/make/**

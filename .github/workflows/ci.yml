@@ -1,0 +1,80 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+name: Main CI
+
+env:
+  NODE_VERSION: "16"
+
+jobs:
+  test:
+    name: 🚧 Lint, Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install Node.js dependencies
+        run: |
+          yarn install --frozen-lockfile --immutable --non-interactive --prefer-offline
+
+      - name: 🕵️‍♂️  Lint
+        run: |
+          yarn lint --if-present
+
+      - name: 🧪  Test
+        run: |
+          yarn test --if-present
+
+  build:
+    name: 🚧 Build
+    needs: [test]
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install Node.js dependencies
+        run: |
+          yarn install --frozen-lockfile --immutable --non-interactive --prefer-offline
+
+      - name: 🚧  Build Agent
+        run: |
+          yarn make
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-${{ github.event.number }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 5
+          path: out/make/**

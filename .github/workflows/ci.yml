@@ -46,7 +46,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [macos, windows, ubuntu]
+        include:
+          - runner: "macos"
+            arch: "default"
+          - runner: "windows"
+            arch: "default"
+          - runner: "ubuntu"
+            arch: "default"
+          - runner: "ubuntu"
+            arch: "arm64"
+          - runner: "ubuntu"
+            arch: "armv7l"
     runs-on: ${{ matrix.runner }}-latest
     steps:
       - name: Check out Git repository
@@ -66,23 +76,19 @@ jobs:
           yarn install --frozen-lockfile --immutable --non-interactive --prefer-offline
 
       - name: 🚧  Build Agent
+        if: ${{ matrix.arch == 'default' }}
         run: |
           yarn make
 
       - name: 🚧  Build Agent arm64
-        if: ${{ matrix.runner == 'ubuntu' }}
+        if: ${{ matrix.arch != 'default' }}
         run: |
-          yarn make --arch arm64 --targets "@electron-forge/maker-deb"
-
-      - name: 🚧  Build Agent armv7l
-        if: ${{ matrix.runner == 'ubuntu' }}
-        run: |
-          yarn make --arch armv7l --targets "@electron-forge/maker-deb"
+          yarn make --arch ${{ matrix.arch }} --targets "@electron-forge/maker-deb"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: build-${{ matrix.runner }}-${{ github.event.number }}-${{ github.run_id }}
+          name: build-${{ matrix.runner }}-${{ matrix.arch }}-${{ github.event.number }}-${{ github.run_id }}
           if-no-files-found: error
           retention-days: 5
           path: out/make/**

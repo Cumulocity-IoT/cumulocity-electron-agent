@@ -70,7 +70,7 @@ jobs:
           yarn make
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build-${{ matrix.runner }}-${{ github.event.number }}-${{ github.run_id }}
           if-no-files-found: error

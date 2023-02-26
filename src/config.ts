@@ -135,7 +135,7 @@ export class AgentConfig {
 
   private isValidProtocolIncludedInList(
     value: unknown,
-    list: string[]
+    list: ReadonlyArray<string>
   ): boolean {
     return typeof value === "string" && list.includes(value);
   }

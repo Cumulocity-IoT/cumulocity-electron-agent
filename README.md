@@ -23,7 +23,7 @@ In addition the `c8y_Webcam` operation has been added for testing. The implement
 The agent also runs just fine on normal laptops using their integrated cameras.
 Cameras connected via CSI to the Raspberry Pi have not been tested yet.
 
-## Installation instructions
+## Installation instructions (Raspberry Pi)
 
 - Download Ubuntu Desktop 22.04 (64-bit) [here](https://ubuntu.com/download/raspberry-pi)
 - Flash it using e.g. [Balena etcher](https://www.balena.io/etcher) onto an sd card

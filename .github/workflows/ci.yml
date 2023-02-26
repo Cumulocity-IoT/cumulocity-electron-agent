@@ -69,6 +69,16 @@ jobs:
         run: |
           yarn make
 
+      - name: 🚧  Build Agent arm64
+        if: ${{ matrix.runner == 'ubuntu' }}
+        run: |
+          yarn make --arch arm64 --targets "@electron-forge/maker-deb"
+
+      - name: 🚧  Build Agent armv7l
+        if: ${{ matrix.runner == 'ubuntu' }}
+        run: |
+          yarn make --arch armv7l --targets "@electron-forge/maker-deb"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:

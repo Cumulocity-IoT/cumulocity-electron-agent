@@ -60,6 +60,8 @@ async function startWebRTC() {
     });
   } catch (e) {
     console.log("unable to get streams.", e);
+    failed();
+    return;
   }
 
   try {
@@ -69,8 +71,13 @@ async function startWebRTC() {
     sendOfferToAgent(pc, offer);
   } catch (e) {
     console.log("unable to get offer", e);
-    sendOfferToAgent(pc, { candidates: [], offerDescription: null });
+    failed();
+    return;
   }
+}
+
+function failed() {
+  sendOfferToAgent(null, { candidates: [], offerDescription: null });
 }
 
 function sendOfferToAgent(
@@ -80,13 +87,17 @@ function sendOfferToAgent(
     offerDescription: RTCSessionDescriptionInit;
   }
 ) {
-  (window as any).electronAPI.handleAnswer((event: any, answerPayload: any) => {
-    const { answer, candidates } = JSON.parse(answerPayload);
-    pc.setRemoteDescription(answer);
-    candidates.forEach((can: any) => {
-      pc.addIceCandidate(can);
-    });
-  });
+  if (pc) {
+    (window as any).electronAPI.handleAnswer(
+      (event: any, answerPayload: any) => {
+        const { answer, candidates } = JSON.parse(answerPayload);
+        pc.setRemoteDescription(answer);
+        candidates.forEach((can: any) => {
+          pc.addIceCandidate(can);
+        });
+      }
+    );
+  }
   (window as any).electronAPI.sendOffer(JSON.stringify(offer));
 }
 

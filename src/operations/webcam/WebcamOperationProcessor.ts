@@ -125,7 +125,7 @@ export class WebcamOperationProcessor extends OperationProcessor {
         nodeIntegration: true,
         preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       },
-      show: false,
+      show: process.argv.includes("--debug"),
       width: 800,
     });
 

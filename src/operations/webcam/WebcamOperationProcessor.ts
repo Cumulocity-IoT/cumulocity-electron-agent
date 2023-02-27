@@ -85,7 +85,7 @@ export class WebcamOperationProcessor extends OperationProcessor {
           offer,
         },
         status:
-          candidates.length && offer
+          candidates?.length && offer
             ? OperationStatus.SUCCESSFUL
             : OperationStatus.FAILED,
       });

@@ -78,7 +78,7 @@ jobs:
           name: build-${{ matrix.arch }}
           if-no-files-found: error
           retention-days: 5
-          path: out/make/**
+          path: out/make/**/*.deb
 
   release:
     name: Create Release on Github and upload artifacts

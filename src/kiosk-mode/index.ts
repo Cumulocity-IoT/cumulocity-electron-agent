@@ -1,7 +1,7 @@
 import { BrowserWindow, session } from "electron";
 import { AgentConfig } from "../config";
 import { BasicAuth, Client, ICredentials } from "@c8y/client";
-import { parse } from "set-cookie-parser";
+import { parse, splitCookiesString } from "set-cookie-parser";
 
 export async function createKioskModeWindow(
   config: AgentConfig,
@@ -10,13 +10,15 @@ export async function createKioskModeWindow(
   const { baseUrl, basicAuthClient } = await performLogin(config, credentials);
   let path = `/apps/cockpit/?hideNavigator=true&noAppSwitcher=true`;
   try {
-    const {data: details} = await basicAuthClient.identity.detail({type: 'c8y_Serial', externalId: config.getClientId()});
+    const { data: details } = await basicAuthClient.identity.detail({
+      type: "c8y_Serial",
+      externalId: config.getClientId(),
+    });
     const deviceId = details.managedObject?.id;
-    path = `/apps/cockpit/?hideNavigator=true&noAppSwitcher=true#/device/${deviceId}/`
+    path = `/apps/cockpit/?hideNavigator=true&noAppSwitcher=true#/device/${deviceId}/`;
   } catch (e) {
     // did not find existing device
   }
-  
 
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -34,10 +36,7 @@ export async function createKioskModeWindow(
   // Open the DevTools.
   //   mainWindow.webContents.openDevTools();
 
-  mainWindow.loadURL(
-    baseUrl +
-    path
-  );
+  mainWindow.loadURL(baseUrl + path);
   return mainWindow;
 }
 
@@ -58,29 +57,20 @@ export async function performLogin(
   config: AgentConfig,
   credentials: ICredentials
 ) {
-  const { baseUrl, basicAuthClient } = await getBaseUrl(
-    config,
-    credentials
-  );
+  const { baseUrl, basicAuthClient } = await getBaseUrl(config, credentials);
   const login = await Client.loginViaOAuthInternal(credentials, false, baseUrl);
 
-  // cookie parsing could be improved..
-  const cookies = login.headers
-    .get("set-cookie")
-    .split(", ")
-    .map((setCookie) => parse(setCookie))
-    .reduceRight((prev, curr) => prev.concat(curr), [])
-    .filter((tmp) => !!tmp.name);
-  const oneCookie = parse(login.headers.get("set-cookie"))[0];
+  const cookies = parse(splitCookiesString(login.headers.get("set-cookie")));
   const adjustedCookies = cookies.map((cookie) => {
     const newCookie: Electron.CookiesSetDetails = {
       url: baseUrl,
       path: cookie.path,
-      httpOnly: cookie.name === "authorization",
-      secure: true,
+      httpOnly: cookie.httpOnly,
+      secure: cookie.secure,
+      domain: cookie.domain,
       value: cookie.value,
       name: cookie.name,
-      expirationDate: oneCookie.expires.getTime() / 1000,
+      expirationDate: cookie.expires.getTime() / 1000,
     };
     return newCookie;
   });

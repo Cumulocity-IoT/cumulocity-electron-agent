@@ -8,6 +8,7 @@ import { logger } from "./logger";
 import { registerListenerForOperations } from "./operations";
 import { AgentConfig } from "./config";
 import { AgentStatus, createStatusEvent } from "./event";
+import { createKioskModeWindow } from "./kiosk-mode";
 
 Object.assign(global, { WebSocket: require("ws") });
 
@@ -52,6 +53,7 @@ async function start() {
     });
 
     addHardwareInfos(mqttClient, restClient, clientId);
+    createKioskModeWindow(config, credentials);
   });
   setupMeasurementScheduler(mqttClient, config);
 

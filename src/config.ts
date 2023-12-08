@@ -29,7 +29,7 @@ export class AgentConfig {
     ) {
       return `${this.configuration.mqttProtocol}://${this.configuration.domain}:${this.configuration.mqttPort}/mqtt`;
     }
-    return `${this.configuration.mqttProtocol}://${this.configuration.domain}:${this.configuration.mqttPort}/mqtt`;
+    return `${this.configuration.mqttProtocol}://${this.configuration.domain}:${this.configuration.mqttPort}`;
   }
 
   public getClientId(): string {
@@ -85,9 +85,9 @@ export class AgentConfig {
     const validDefaultConfiguration: IConfiguration = {
       domain: platformDomain,
       httpPort: 443,
-      mqttPort: 443,
+      mqttPort: 8883,
       httpProtocol: "https",
-      mqttProtocol: "wss",
+      mqttProtocol: "mqtts",
       clientId: getClientId(),
     };
 

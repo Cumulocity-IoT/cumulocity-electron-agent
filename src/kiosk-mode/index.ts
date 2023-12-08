@@ -18,7 +18,7 @@ export async function createKioskModeWindow(
     show: true,
     width: 800,
     alwaysOnTop: true,
-    kiosk: false,
+    kiosk: true,
     autoHideMenuBar: true,
   });
 

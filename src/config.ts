@@ -29,7 +29,7 @@ export class AgentConfig {
     ) {
       return `${this.configuration.mqttProtocol}://${this.configuration.domain}:${this.configuration.mqttPort}/mqtt`;
     }
-    return `${this.configuration.mqttProtocol}://${this.configuration.domain}:${this.configuration.mqttPort}/mqtt`;
+    return `${this.configuration.mqttProtocol}://${this.configuration.domain}:${this.configuration.mqttPort}`;
   }
 
   public getClientId(): string {
